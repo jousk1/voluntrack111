@@ -16,5 +16,7 @@ urlpatterns = [
     path("approvals/<int:pk>/", views.approval_detail, name="approval_detail"),
     path("approvals/<int:pk>/approve/", views.approval_approve, name="approval_approve"),
     path("approvals/<int:pk>/reject/", views.approval_reject, name="approval_reject"),
+    path("logs/", views.all_logs, name="all_logs"),
+    path("logs/<int:pk>/status/", views.log_update_status, name="log_update_status"),
     path("reports/", views.reports, name="reports"),
 ]

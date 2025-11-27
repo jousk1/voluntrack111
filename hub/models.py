@@ -21,7 +21,7 @@ class Event(models.Model):
     ]
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateTimeField()
     location = models.CharField(max_length=200)
     capacity = models.PositiveIntegerField(default=0)

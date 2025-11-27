@@ -10,55 +10,14 @@
       <div class="card-body">
         <form method="post">
           {% csrf_token %}
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+              {{ field }}
+              {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
             </div>
-          {% endif %}
-          
-          <div class="mb-3">
-            <label for="{{ form.event.id_for_label }}" class="form-label">Event (Optional)</label>
-            {{ form.event }}
-            {% if form.event.errors %}
-              <div class="text-danger small">{{ form.event.errors }}</div>
-            {% endif %}
-            <div class="form-text">Select an event if this work is related to a specific event</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="{{ form.department.id_for_label }}" class="form-label">Department <span class="text-danger">*</span></label>
-            {{ form.department }}
-            {% if form.department.errors %}
-              <div class="text-danger small">{{ form.department.errors }}</div>
-            {% endif %}
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.date.id_for_label }}" class="form-label">Date <span class="text-danger">*</span></label>
-              {{ form.date }}
-              {% if form.date.errors %}
-                <div class="text-danger small">{{ form.date.errors }}</div>
-              {% endif %}
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.hours.id_for_label }}" class="form-label">Hours <span class="text-danger">*</span></label>
-              {{ form.hours }}
-              {% if form.hours.errors %}
-                <div class="text-danger small">{{ form.hours.errors }}</div>
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-            {% if form.description.errors %}
-              <div class="text-danger small">{{ form.description.errors }}</div>
-            {% endif %}
-            <div class="form-text">Describe the work you performed</div>
-          </div>
-
+          {% endfor %}
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">Submit for Approval</button>
             <a href="{% url 'hub:dashboard' %}" class="btn btn-outline-secondary">Cancel</a>

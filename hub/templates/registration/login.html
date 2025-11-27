@@ -5,11 +5,7 @@
     <div class="card shadow">
       <div class="card-body p-5">
         <h2 class="card-title text-center mb-4">Login</h2>
-        {% if form.errors %}
-          <div class="alert alert-danger">
-            Your username and password didn't match. Please try again.
-          </div>
-        {% endif %}
+        {% if form.errors %}<div class="alert alert-danger">Your username and password didn't match. Please try again.</div>{% endif %}
         <form method="post">
           {% csrf_token %}
           <div class="mb-3">
@@ -22,9 +18,7 @@
           </div>
           <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
         </form>
-        <div class="text-center">
-          <p class="mb-0">Don't have an account? <a href="{% url 'hub:register' %}">Register here</a></p>
-        </div>
+        <div class="text-center"><p class="mb-0">Don't have an account? <a href="{% url 'hub:register' %}">Register here</a></p></div>
       </div>
     </div>
   </div>
