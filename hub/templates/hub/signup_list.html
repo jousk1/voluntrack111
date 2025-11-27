@@ -1,0 +1,14 @@
+{% extends "hub/base.html" %}
+{% block content %}
+<h2>My Event Signups</h2>
+<ul class="list-group">
+  {% for s in signups %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ s.event.title }} — {{ s.event.date|date:"Y-m-d H:i" }}</span>
+      <span class="badge text-bg-secondary">{{ s.status }}</span>
+    </li>
+  {% empty %}
+    <li class="list-group-item">You haven't signed up for any events yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

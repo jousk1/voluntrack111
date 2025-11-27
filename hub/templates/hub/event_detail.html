@@ -1,0 +1,167 @@
+{% extends "hub/base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h2 class="card-title mb-0">{{ event.title }}</h2>
+          <span class="badge bg-secondary">{{ event.department.name }}</span>
+        </div>
+        
+        <div class="mb-3">
+          <p class="text-muted mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
+              <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+            </svg>
+            <strong>{{ event.date|date:"F d, Y" }}</strong> at {{ event.date|date:"g:i A" }}
+          </p>
+          <p class="text-muted mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+              <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+            </svg>
+            {{ event.location }}
+          </p>
+        </div>
+
+        {% if event.description %}
+          <div class="mb-4">
+            <h5>Description</h5>
+            <p class="text-muted">{{ event.description|linebreaks }}</p>
+          </div>
+        {% endif %}
+
+        {% if has_hours_data %}
+          <div class="mb-4">
+            <h5>Hours Logged for this Event</h5>
+            <p class="text-muted small">Approved hours per volunteer</p>
+            <canvas id="eventHoursChart" height="220"></canvas>
+          </div>
+        {% endif %}
+
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          {% if event.status == "SCHEDULED" %}
+            {% if not signed and remaining > 0 %}
+              <a class="btn btn-primary" href="{% url 'hub:event_signup' event.pk %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 2.384 6.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                </svg>
+                Sign Up
+              </a>
+              <span class="text-muted">{{ remaining }} spot{{ remaining|pluralize }} remaining</span>
+            {% elif signed %}
+              <span class="badge bg-success fs-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 4.384 6.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.022-1.08z"/>
+                </svg>
+                You're signed up
+              </span>
+            {% else %}
+              <span class="badge bg-danger fs-6">Event is Full</span>
+            {% endif %}
+          {% elif event.status == "COMPLETED" %}
+            <span class="badge bg-secondary fs-6">Event Completed</span>
+          {% elif event.status == "CANCELLED" %}
+            <span class="badge bg-danger fs-6">Event Cancelled</span>
+          {% endif %}
+
+          {% if user.is_authenticated and event.status == "SCHEDULED" %}
+            {% if user.profile.is_coordinator or signed %}
+              <a href="{% url 'hub:contribution_create' %}?event={{ event.pk }}" class="btn btn-outline-primary ms-auto">
+                Log Work for this Event
+              </a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card shadow">
+      <div class="card-header">
+        <h5 class="mb-0">Event Details</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Capacity</dt>
+          <dd>{{ event.capacity|default:"Unlimited" }}</dd>
+          <dt>Created by</dt>
+          <dd>{{ event.created_by.get_full_name|default:event.created_by.username }}</dd>
+          <dt>Created on</dt>
+          <dd>{{ event.created_at|date:"M d, Y" }}</dd>
+          <dt>Status</dt>
+          <dd>
+            {% if user.is_authenticated and user.profile.is_coordinator %}
+              <form method="post" action="{% url 'hub:event_update_status' event.pk %}" class="d-flex gap-2 align-items-center">
+                {% csrf_token %}
+                <select name="status" class="form-select form-select-sm">
+                  <option value="SCHEDULED" {% if event.status == "SCHEDULED" %}selected{% endif %}>Pending</option>
+                  <option value="COMPLETED" {% if event.status == "COMPLETED" %}selected{% endif %}>Completed</option>
+                  <option value="CANCELLED" {% if event.status == "CANCELLED" %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button class="btn btn-sm btn-outline-secondary">Update</button>
+              </form>
+            {% else %}
+              {% if event.status == "SCHEDULED" %}Pending{% else %}{{ event.get_status_display }}{% endif %}
+            {% endif %}
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="card shadow mt-3">
+      <div class="card-header">
+        <h5 class="mb-0">Participants</h5>
+      </div>
+      <div class="card-body">
+        {% if participants %}
+          <ul class="list-unstyled mb-0">
+            {% for s in participants %}
+              <li>{{ s.user.get_full_name|default:s.user.username }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">No one has signed up yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if has_hours_data %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof Chart === "undefined") {
+      return;
+    }
+    const labels = {{ hours_labels_json|safe }};
+    const data = {{ hours_data_json|safe }};
+    const ctx = document.getElementById("eventHoursChart");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Hours",
+          data: data,
+          backgroundColor: "#0d6efd",
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

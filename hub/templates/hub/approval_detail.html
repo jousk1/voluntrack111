@@ -1,0 +1,120 @@
+{% extends "hub/base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Contribution Details</h4>
+        {% if contrib.status == "PENDING" %}
+          <span class="badge bg-warning text-dark fs-6">Pending Review</span>
+        {% elif contrib.status == "APPROVED" %}
+          <span class="badge bg-success fs-6">Approved</span>
+        {% elif contrib.status == "REJECTED" %}
+          <span class="badge bg-danger fs-6">Rejected</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6 class="text-muted mb-1">Volunteer</h6>
+            <p class="mb-3">
+              <strong>{{ contrib.user.get_full_name|default:contrib.user.username }}</strong><br>
+              <small class="text-muted">@{{ contrib.user.username }}</small><br>
+              {% if contrib.user.email %}
+                <small class="text-muted">{{ contrib.user.email }}</small>
+              {% endif %}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted mb-1">Department</h6>
+            <p class="mb-3">
+              <span class="badge bg-secondary fs-6">{{ contrib.department.name }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <h6 class="text-muted mb-1">Date</h6>
+            <p class="mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar" viewBox="0 0 16 16">
+                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+              </svg>
+              {{ contrib.date|date:"F d, Y" }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h6 class="text-muted mb-1">Hours</h6>
+            <p class="mb-3">
+              <strong class="fs-4">{{ contrib.hours }}</strong> hours
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h6 class="text-muted mb-1">Submitted</h6>
+            <p class="mb-3">
+              <small>{{ contrib.created_at|date:"M d, Y H:i" }}</small>
+            </p>
+          </div>
+        </div>
+
+        {% if contrib.event %}
+        <div class="mb-4">
+          <h6 class="text-muted mb-1">Related Event</h6>
+          <p class="mb-0">
+            <a href="{% url 'hub:event_detail' contrib.event.pk %}" class="text-decoration-none">
+              <span class="badge bg-info fs-6">{{ contrib.event.title }}</span>
+            </a>
+            <br>
+            <small class="text-muted">{{ contrib.event.date|date:"M d, Y" }} @ {{ contrib.event.location }}</small>
+          </p>
+        </div>
+        {% endif %}
+
+        {% if contrib.description %}
+        <div class="mb-4">
+          <h6 class="text-muted mb-2">Description</h6>
+          <div class="card bg-light">
+            <div class="card-body">
+              <p class="mb-0">{{ contrib.description|linebreaks }}</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if contrib.approved_by %}
+        <div class="mb-4">
+          <h6 class="text-muted mb-1">Review Information</h6>
+          <p class="mb-0">
+            <strong>Status:</strong> {{ contrib.get_status_display }}<br>
+            <strong>Reviewed by:</strong> {{ contrib.approved_by.get_full_name|default:contrib.approved_by.username }}<br>
+            {% if contrib.approved_at %}
+              <strong>Reviewed on:</strong> {{ contrib.approved_at|date:"F d, Y H:i" }}
+            {% endif %}
+          </p>
+        </div>
+        {% endif %}
+
+        <div class="d-flex gap-2 mt-4">
+          {% if contrib.status == "PENDING" %}
+            <a class="btn btn-success btn-lg" href="{% url 'hub:approval_approve' contrib.pk %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 2.384 6.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+              </svg>
+              Approve
+            </a>
+            <a class="btn btn-danger btn-lg" href="{% url 'hub:approval_reject' contrib.pk %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+              </svg>
+              Reject
+            </a>
+          {% endif %}
+          <a href="{% url 'hub:approvals_list' %}?status={{ contrib.status }}" class="btn btn-outline-secondary btn-lg">Back to List</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
