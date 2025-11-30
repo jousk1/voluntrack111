@@ -1,0 +1,31 @@
+{% extends "hub/base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow border-danger">
+      <div class="card-header bg-danger text-white">
+        <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Delete Event</h4>
+      </div>
+      <div class="card-body">
+        <p class="mb-3"><strong>Warning:</strong> This action cannot be undone. All signups and related contributions will remain, but the event will be permanently deleted.</p>
+        <div class="card bg-light mb-4">
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="mb-1"><i class="bi bi-calendar"></i> {{ event.date|date:"F d, Y" }} at {{ event.date|date:"g:i A" }}</p>
+            <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
+            <p class="mb-0 mt-2"><span class="badge bg-secondary">{{ event.signups.count }} signup{{ event.signups.count|pluralize }}</span></p>
+          </div>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Yes, Delete Event</button>
+            <a href="{% url 'hub:event_detail' event.pk %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -4,8 +4,7 @@
   <div class="col-md-8">
     <div class="card shadow">
       <div class="card-header">
-        <h4 class="mb-0">Log Your Work</h4>
-        <small class="text-muted">Your contribution will be submitted for coordinator approval</small>
+        <h4 class="mb-0">Edit Event: {{ event.title }}</h4>
       </div>
       <div class="card-body">
         <form method="post">
@@ -16,12 +15,12 @@
               <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
               {{ field }}
               {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
-              {% if field.help_text %}<div class="form-text text-warning">{{ field.help_text }}</div>{% endif %}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
             </div>
           {% endfor %}
           <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Submit for Approval</button>
-            <a href="{% url 'hub:dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{% url 'hub:event_detail' event.pk %}" class="btn btn-outline-secondary">Cancel</a>
           </div>
         </form>
       </div>
@@ -29,3 +28,4 @@
   </div>
 </div>
 {% endblock %}
+

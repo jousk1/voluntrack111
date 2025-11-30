@@ -1,52 +1,40 @@
-body { 
-  padding-bottom: 4rem; 
+/*
+ * VolunTrack - Main Stylesheet
+ * 
+ * This CSS file contains custom styles for the VolunTrack application.
+ * It extends Bootstrap 5 with project-specific styling.
+ * 
+ * Structure:
+ *   1. Base Styles
+ *   2. Navigation
+ *   3. Cards & Components
+ *   4. Forms
+ *   5. Tables
+ *   6. Interactive Elements
+ *   7. Status Indicators
+ *   8. Responsive Styles
+ */
+
+
+/* ==========================================================================
+   1. BASE STYLES
+   ========================================================================== */
+
+body {
+  padding-bottom: 4rem;
   background-color: #f8f9fa;
 }
 
-.card {
-  border: none;
-  border-radius: 0.5rem;
-}
 
-.card.shadow {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-}
+/* ==========================================================================
+   2. NAVIGATION
+   ========================================================================== */
 
 .navbar-brand {
   font-weight: 600;
   font-size: 1.5rem;
 }
 
-.btn {
-  border-radius: 0.375rem;
-  font-weight: 500;
-}
-
-.alert {
-  border-radius: 0.5rem;
-  border: none;
-}
-
-.form-control, .form-select {
-  border-radius: 0.375rem;
-}
-
-.form-control:focus, .form-select:focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.table {
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.badge {
-  font-weight: 500;
-  padding: 0.35em 0.65em;
-}
-
-/* Coordinator-specific styling */
 .nav-item.dropdown .nav-link {
   color: #ffc107 !important;
   font-weight: 600;
@@ -73,7 +61,7 @@ body {
   background-color: #f8f9fa;
 }
 
-/* Nav tabs styling */
+/* Tab Navigation */
 .nav-tabs {
   border-bottom: 2px solid #dee2e6;
 }
@@ -96,9 +84,147 @@ body {
   background-color: transparent;
 }
 
-/* Card header styling */
+
+/* ==========================================================================
+   3. CARDS & COMPONENTS
+   ========================================================================== */
+
+.card {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.card.shadow {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
 .card-header {
   background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
   font-weight: 600;
+}
+
+/* Clickable Cards (dashboard stat cards) */
+.card[style*="cursor: pointer"]:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+.alert {
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.alert-info h5 {
+  margin-bottom: 0.5rem;
+}
+
+
+/* ==========================================================================
+   4. FORMS
+   ========================================================================== */
+
+.form-control,
+.form-select {
+  border-radius: 0.375rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+}
+
+/* Form Loading State */
+.form-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+
+/* ==========================================================================
+   5. TABLES
+   ========================================================================== */
+
+.table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+
+/* ==========================================================================
+   6. INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Pending Contribution Items (yellow left border) */
+.list-group-item.border-warning {
+  background-color: #fffbf0;
+  transition: all 0.2s ease;
+}
+
+.list-group-item.border-warning:hover {
+  background-color: #fff8e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateX(2px);
+}
+
+.list-group-item.border-warning .badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.65em;
+}
+
+
+/* ==========================================================================
+   7. STATUS INDICATORS
+   ========================================================================== */
+
+/* Status badges are styled via Bootstrap classes:
+   - bg-warning text-dark: Pending
+   - bg-success: Approved
+   - bg-danger: Rejected
+   - bg-info: Informational
+   - bg-secondary: Neutral/Category
+*/
+
+
+/* ==========================================================================
+   8. RESPONSIVE STYLES
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Make tables horizontally scrollable */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Reduce card padding on mobile */
+  .card-body {
+    padding: 1rem;
+  }
+
+  /* Stack button groups vertically */
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .btn-group .btn {
+    border-radius: 0.375rem !important;
+    margin-bottom: 0.25rem;
+  }
 }

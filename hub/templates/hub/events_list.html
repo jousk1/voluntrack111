@@ -10,18 +10,31 @@
   {% endif %}
 </div>
 
-<form method="get" class="row g-2 align-items-end mb-3">
-  {% if mine %}<input type="hidden" name="mine" value="1">{% endif %}
-  <div class="col-auto">
-    <label class="form-label">Status</label>
-    <select name="status" class="form-select form-select-sm">
-      <option value="" {% if status_filter == "SCHEDULED" %}selected{% endif %}>Scheduled</option>
-      <option value="COMPLETED" {% if status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
-      <option value="ALL" {% if status_filter == "ALL" %}selected{% endif %}>All</option>
-    </select>
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      {% if mine %}<input type="hidden" name="mine" value="1">{% endif %}
+      <div class="col-md-4">
+        <label class="form-label">Search</label>
+        <input type="text" name="search" class="form-control" placeholder="Search events..." value="{{ search }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="SCHEDULED" {% if status_filter == "SCHEDULED" %}selected{% endif %}>Scheduled</option>
+          <option value="COMPLETED" {% if status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
+          <option value="" {% if not status_filter or status_filter == "ALL" %}selected{% endif %}>All</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="{% url 'hub:events_list' %}{% if mine %}?mine=1{% endif %}" class="btn btn-outline-secondary w-100">Clear</a>
+      </div>
+    </form>
   </div>
-  <div class="col-auto"><button class="btn btn-sm btn-outline-secondary">Apply</button></div>
-</form>
+</div>
 
 {% if events %}
   <div class="row">
@@ -34,15 +47,41 @@
               {% if e.department %}<span class="badge bg-secondary">{{ e.department.name }}</span>{% endif %}
             </div>
             <p class="card-text text-muted small mb-2"><i class="bi bi-calendar"></i> {{ e.date|date:"M d, Y H:i" }}</p>
-            <p class="card-text text-muted small mb-3"><i class="bi bi-geo-alt"></i> {{ e.location }}</p>
-            {% if e.description %}<p class="card-text">{{ e.description|truncatewords:20 }}</p>{% endif %}
+            <p class="card-text text-muted small mb-2"><i class="bi bi-geo-alt"></i> {{ e.location }}</p>
+            {% if e.capacity > 0 %}
+              {% with confirmed_count=e.signups.count %}
+                <p class="card-text text-muted small mb-2">
+                  <i class="bi bi-people"></i> {{ confirmed_count }}/{{ e.capacity }} signed up
+                </p>
+              {% endwith %}
+            {% endif %}
+            {% if e.description %}<p class="card-text small">{{ e.description|truncatewords:20 }}</p>{% endif %}
             <a href="{% url 'hub:event_detail' e.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
           </div>
         </div>
       </div>
     {% endfor %}
   </div>
+  
+  {% if events.has_other_pages %}
+    <nav aria-label="Events pagination">
+      <ul class="pagination justify-content-center">
+        {% if events.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if mine %}&mine=1{% endif %}">First</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ events.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if mine %}&mine=1{% endif %}">Previous</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Page {{ events.number }} of {{ events.paginator.num_pages }}</span></li>
+        {% if events.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ events.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if mine %}&mine=1{% endif %}">Next</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ events.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if mine %}&mine=1{% endif %}">Last</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 {% else %}
-  <div class="alert alert-info"><p class="mb-0">No events found. Check back later!</p></div>
+  <div class="alert alert-info">
+    <h5 class="alert-heading"><i class="bi bi-info-circle"></i> No events found</h5>
+    <p class="mb-0">{% if search %}Try adjusting your search terms.{% else %}Check back later or {% if user.profile.is_coordinator %}<a href="{% url 'hub:event_create' %}" class="alert-link">create a new event</a>.{% else %}ask a coordinator to create one.{% endif %}{% endif %}</p>
+  </div>
 {% endif %}
 {% endblock %}

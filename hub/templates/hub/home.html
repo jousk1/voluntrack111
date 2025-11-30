@@ -1,15 +1,22 @@
 {% extends "hub/base.html" %}
+
 {% block content %}
 <div class="p-5 mb-4 bg-light rounded-3">
   <h1 class="display-5 fw-bold">Track. Organize. Recognize.</h1>
-  <p class="col-md-8 fs-5">A simple volunteer management app for your school club: log work, sign up for events, and generate coordinator-approved stats & charts.</p>
+  <p class="col-md-8 fs-5">
+    A simple volunteer management app for your school club: log work, sign up for events, 
+    and generate coordinator-approved stats & charts.
+  </p>
+  
   {% if not user.is_authenticated %}
     <div class="mt-4">
       <a href="{% url 'hub:register' %}" class="btn btn-primary btn-lg me-2">Register</a>
       <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Log in</a>
     </div>
   {% else %}
-    <div class="mt-4"><a href="{% url 'hub:dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a></div>
+    <div class="mt-4">
+      <a href="{% url 'hub:dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+    </div>
   {% endif %}
 </div>
 
@@ -17,24 +24,41 @@
   <div class="col-md-4 mb-4">
     <div class="card h-100 shadow-sm">
       <div class="card-body">
-        <h5 class="card-title"><i class="bi bi-calendar-event fs-4"></i> Event Management</h5>
-        <p class="card-text">Browse and sign up for volunteer events. Track your commitments and never miss an opportunity to help.</p>
+        <h5 class="card-title">
+          <i class="bi bi-calendar-event fs-4"></i> Event Management
+        </h5>
+        <p class="card-text">
+          Browse and sign up for volunteer events. Track your commitments 
+          and never miss an opportunity to help.
+        </p>
       </div>
     </div>
   </div>
+  
   <div class="col-md-4 mb-4">
     <div class="card h-100 shadow-sm">
       <div class="card-body">
-        <h5 class="card-title"><i class="bi bi-clock-history fs-4"></i> Track Hours</h5>
-        <p class="card-text">Log your volunteer hours and contributions. Get them approved by coordinators and build your volunteer portfolio.</p>
+        <h5 class="card-title">
+          <i class="bi bi-clock-history fs-4"></i> Track Hours
+        </h5>
+        <p class="card-text">
+          Log your volunteer hours and contributions. Get them approved 
+          by coordinators and build your volunteer portfolio.
+        </p>
       </div>
     </div>
   </div>
+  
   <div class="col-md-4 mb-4">
     <div class="card h-100 shadow-sm">
       <div class="card-body">
-        <h5 class="card-title"><i class="bi bi-bar-chart fs-4"></i> Reports & Analytics</h5>
-        <p class="card-text">View detailed reports and analytics. See leaderboards, department statistics, and track your progress over time.</p>
+        <h5 class="card-title">
+          <i class="bi bi-bar-chart fs-4"></i> Reports & Analytics
+        </h5>
+        <p class="card-text">
+          View detailed reports and analytics. See leaderboards, 
+          department statistics, and track your progress over time.
+        </p>
       </div>
     </div>
   </div>

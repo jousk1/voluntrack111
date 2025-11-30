@@ -5,8 +5,16 @@
     <div class="card shadow mb-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start mb-3">
-          <h2 class="card-title mb-0">{{ event.title }}</h2>
-          {% if event.department %}<span class="badge bg-secondary">{{ event.department.name }}</span>{% endif %}
+          <div>
+            <h2 class="card-title mb-0">{{ event.title }}</h2>
+            {% if event.department %}<span class="badge bg-secondary">{{ event.department.name }}</span>{% endif %}
+          </div>
+          {% if user.profile.is_coordinator and event.created_by == user %}
+            <div class="btn-group">
+              <a href="{% url 'hub:event_edit' event.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+              <a href="{% url 'hub:event_delete' event.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
+            </div>
+          {% endif %}
         </div>
         <p class="text-muted mb-2"><i class="bi bi-calendar-event"></i> <strong>{{ event.date|date:"F d, Y" }}</strong> at {{ event.date|date:"g:i A" }}</p>
         <p class="text-muted mb-3"><i class="bi bi-geo-alt-fill"></i> {{ event.location }}</p>
@@ -20,11 +28,14 @@
         {% endif %}
         <div class="d-flex flex-wrap gap-2 align-items-center">
           {% if event.status == "SCHEDULED" %}
-            {% if not signed and remaining > 0 %}
+            {% if signed %}
+              <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill"></i> You're signed up</span>
+            {% elif remaining is None %}
+              <a class="btn btn-primary" href="{% url 'hub:event_signup' event.pk %}"><i class="bi bi-check-circle"></i> Sign Up</a>
+              <span class="text-muted">Unlimited spots available</span>
+            {% elif remaining > 0 %}
               <a class="btn btn-primary" href="{% url 'hub:event_signup' event.pk %}"><i class="bi bi-check-circle"></i> Sign Up</a>
               <span class="text-muted">{{ remaining }} spot{{ remaining|pluralize }} remaining</span>
-            {% elif signed %}
-              <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill"></i> You're signed up</span>
             {% else %}
               <span class="badge bg-danger fs-6">Event is Full</span>
             {% endif %}
@@ -47,7 +58,7 @@
       <div class="card-header"><h5 class="mb-0">Event Details</h5></div>
       <div class="card-body">
         <dl class="mb-0">
-          <dt>Capacity</dt><dd>{{ event.capacity|default:"Unlimited" }}</dd>
+          <dt>Capacity</dt><dd>{% if event.capacity == 0 %}Unlimited{% else %}{{ event.capacity }}{% endif %}</dd>
           <dt>Created by</dt><dd>{{ event.created_by.get_full_name|default:event.created_by.username }}</dd>
           <dt>Created on</dt><dd>{{ event.created_at|date:"M d, Y" }}</dd>
           <dt>Status</dt>

@@ -52,6 +52,12 @@
           <p class="mb-0"><strong>Status:</strong> {{ contrib.get_status_display }}<br><strong>Reviewed by:</strong> {{ contrib.approved_by.get_full_name|default:contrib.approved_by.username }}{% if contrib.approved_at %}<br><strong>Reviewed on:</strong> {{ contrib.approved_at|date:"F d, Y H:i" }}{% endif %}</p>
         </div>
         {% endif %}
+        {% if contrib.rejection_reason %}
+        <div class="mb-4">
+          <h6 class="text-muted mb-2">Rejection Reason</h6>
+          <div class="alert alert-warning"><p class="mb-0">{{ contrib.rejection_reason|linebreaks }}</p></div>
+        </div>
+        {% endif %}
         <div class="d-flex gap-2 mt-4">
           {% if contrib.status == "PENDING" %}
             <a class="btn btn-success btn-lg" href="{% url 'hub:approval_approve' contrib.pk %}"><i class="bi bi-check-circle"></i> Approve</a>

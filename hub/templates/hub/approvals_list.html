@@ -59,7 +59,24 @@
       </div>
     {% endfor %}
   </div>
+  
+  {% if contributions.has_other_pages %}
+    <nav aria-label="Contributions pagination" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if contributions.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ contributions.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if dept_filter_value %}&department={{ dept_filter_value }}{% endif %}">Previous</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Page {{ contributions.number }} of {{ contributions.paginator.num_pages }}</span></li>
+        {% if contributions.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ contributions.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if dept_filter_value %}&department={{ dept_filter_value }}{% endif %}">Next</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 {% else %}
-  <div class="alert alert-info"><p class="mb-0">No contributions found.</p></div>
+  <div class="alert alert-info">
+    <h5 class="alert-heading"><i class="bi bi-info-circle"></i> No Contributions Found</h5>
+    <p class="mb-0">No contributions match your current filters. Try adjusting your search criteria.</p>
+  </div>
 {% endif %}
 {% endblock %}

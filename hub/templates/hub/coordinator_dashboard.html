@@ -9,39 +9,48 @@
 
 <div class="row mb-4">
   <div class="col-md-3">
-    <div class="card bg-warning text-dark">
-      <div class="card-body">
-        <h5 class="card-title">Pending Approvals</h5>
-        <h2 class="mb-0">{{ pending_count }}</h2>
-        <a href="{% url 'hub:approvals_list' %}?status=PENDING" class="text-dark small">Review approvals →</a>
+    <a href="{% url 'hub:approvals_list' %}?status=PENDING" class="text-decoration-none">
+      <div class="card bg-warning text-dark h-100" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="card-body">
+          <h5 class="card-title">Pending Approvals</h5>
+          <h2 class="mb-0">{{ pending_count }}</h2>
+          <small class="opacity-75">Click to review →</small>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
   <div class="col-md-3">
-    <div class="card bg-success text-white">
-      <div class="card-body">
-        <h5 class="card-title">Total Approved Hours</h5>
-        <h2 class="mb-0">{{ total_hours|default:"0" }}</h2>
+    <a href="{% url 'hub:reports' %}" class="text-decoration-none">
+      <div class="card bg-success text-white h-100" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="card-body">
+          <h5 class="card-title">Total Approved Hours</h5>
+          <h2 class="mb-0">{{ total_hours|default:"0" }}</h2>
+          <small class="opacity-75">Click to view reports →</small>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
   <div class="col-md-3">
-    <div class="card bg-info text-white">
-      <div class="card-body">
-        <h5 class="card-title">My Events</h5>
-        <h2 class="mb-0">{{ total_events }}</h2>
-        <a href="{% url 'hub:events_list' %}?mine=1&status=ALL" class="text-white small">View all →</a>
+    <a href="{% url 'hub:events_list' %}?mine=1" class="text-decoration-none">
+      <div class="card bg-info text-white h-100" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="card-body">
+          <h5 class="card-title">My Events</h5>
+          <h2 class="mb-0">{{ total_events }}</h2>
+          <small class="opacity-75">Click to view all →</small>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
   <div class="col-md-3">
-    <div class="card bg-primary text-white">
-      <div class="card-body">
-        <h5 class="card-title">Upcoming Events</h5>
-        <h2 class="mb-0">{{ upcoming|length }}</h2>
-        <a href="{% url 'hub:events_list' %}" class="text-white small">View all →</a>
+    <a href="{% url 'hub:events_list' %}" class="text-decoration-none">
+      <div class="card bg-primary text-white h-100" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="card-body">
+          <h5 class="card-title">Upcoming Events</h5>
+          <h2 class="mb-0">{{ upcoming|length }}</h2>
+          <small class="opacity-75">Click to view all →</small>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
 </div>
 
@@ -53,12 +62,27 @@
         {% if recent_pending %}
           <div class="list-group list-group-flush">
             {% for c in recent_pending %}
-              <div class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                  <h6 class="mb-1">{{ c.user.get_full_name|default:c.user.username }}</h6>
-                  <p class="mb-1 text-muted small"><span class="badge bg-secondary">{{ c.department.name }}</span> {{ c.date|date:"M d, Y" }} — {{ c.hours }}h</p>
+              <div class="list-group-item border-start border-warning border-3 px-3 py-3 mb-2 rounded">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-2 fw-semibold">{{ c.user.get_full_name|default:c.user.username }}</h6>
+                    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                      <span class="badge bg-secondary">{{ c.department.name }}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 text-muted small mb-2">
+                      <span><i class="bi bi-calendar3"></i> {{ c.date|date:"M d, Y" }}</span>
+                      <span><i class="bi bi-clock"></i> <strong class="text-dark">{{ c.hours }}h</strong></span>
+                    </div>
+                    {% if c.event %}
+                      <div class="mb-2">
+                        <small class="text-muted"><i class="bi bi-calendar-event"></i> {{ c.event.title|truncatewords:5 }}</small>
+                      </div>
+                    {% endif %}
+                  </div>
                 </div>
-                <a href="{% url 'hub:approval_detail' c.pk %}" class="btn btn-sm btn-outline-primary">Review</a>
+                <a href="{% url 'hub:approval_detail' c.pk %}" class="btn btn-sm btn-primary w-100 mt-2">
+                  <i class="bi bi-eye"></i> Review
+                </a>
               </div>
             {% endfor %}
           </div>
