@@ -47,23 +47,27 @@
       {% if has_dept_data %}<canvas id="deptChart" height="220"></canvas>{% else %}<p class="text-muted mb-0">No department data available.</p>{% endif %}
     </div>
   </div>
-  <div class="col-12">
-    <div class="card p-3 shadow-sm">
-      <h5 class="card-title mb-2">Average Hours per Contribution by Department</h5>
-      {% if has_avg_data %}<canvas id="avgChart" height="260"></canvas>{% else %}<p class="text-muted mb-0">Average breakdown available after approvals.</p>{% endif %}
-    </div>
-  </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof Chart === "undefined") return;
-  const colors = ["#0d6efd","#6610f2","#6f42c1","#d63384","#fd7e14","#f03","#20c997","#198754","#0dcaf0","#ffc107"];
+  const colors = ["#0d6efd","#6610f2","#6f42c1","#d63384","#fd7e14","#dc3545","#20c997","#198754","#0dcaf0","#ffc107","#6c757d","#17a2b8"];
   {% if has_rank_data %}
+  const rankDatasets = {{ rank_datasets_json|safe }};
+  const styledDatasets = rankDatasets.map((ds, i) => ({
+    label: ds.label,
+    data: ds.data,
+    backgroundColor: colors[i % colors.length]
+  }));
   new Chart(document.getElementById("rankChart"), {
     type: "bar",
-    data: { labels: {{ rank_labels_json|safe }}, datasets: [{ label: "Hours", data: {{ rank_data_json|safe }}, backgroundColor: colors }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    data: { labels: {{ rank_labels_json|safe }}, datasets: styledDatasets },
+    options: { 
+      responsive: true, 
+      plugins: { legend: { display: true, position: "top" } }, 
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } 
+    }
   });
   {% endif %}
   {% if has_dept_data %}
@@ -71,13 +75,6 @@ document.addEventListener("DOMContentLoaded", function() {
     type: "pie",
     data: { labels: {{ dept_labels_json|safe }}, datasets: [{ data: {{ dept_data_json|safe }}, backgroundColor: colors }] },
     options: { responsive: true }
-  });
-  {% endif %}
-  {% if has_avg_data %}
-  new Chart(document.getElementById("avgChart"), {
-    type: "line",
-    data: { labels: {{ avg_labels_json|safe }}, datasets: [{ label: "Avg Hours", data: {{ avg_data_json|safe }}, borderColor: "#0d6efd", backgroundColor: "rgba(13,110,253,0.2)", fill: true, tension: 0.4 }] },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
   {% endif %}
 });

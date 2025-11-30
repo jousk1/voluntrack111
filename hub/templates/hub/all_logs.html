@@ -54,7 +54,7 @@
               <tr>
                 <td><strong>{{ c.user.get_full_name|default:c.user.username }}</strong></td>
                 <td>{% if c.event %}<a href="{% url 'hub:event_detail' c.event.pk %}">{{ c.event.title|truncatewords:3 }}</a>{% else %}<span class="text-muted">—</span>{% endif %}</td>
-                <td><span class="badge bg-secondary">{{ c.department.name }}</span></td>
+                <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ c.department.name }}</span></td>
                 <td>{{ c.date|date:"M d, Y" }}</td>
                 <td><strong>{{ c.hours }}h</strong></td>
                 <td>

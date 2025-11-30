@@ -8,7 +8,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.db.models import Avg, Q, Sum
+from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -301,12 +301,31 @@ def reports(request):
     if date_to:
         queryset = queryset.filter(date__lte=date_to)
 
+    # Get top 10 volunteers
     top_volunteers = (
         queryset
         .values("user__username")
         .annotate(hours=Sum("hours"))
         .order_by("-hours")[:10]
     )
+    rank_labels = [t["user__username"] for t in top_volunteers]
+    
+    # Get hours by department for each top volunteer (for stacked bar chart)
+    departments = list(Department.objects.values_list("name", flat=True))
+    volunteer_dept_data = []
+    
+    for dept_name in departments:
+        dept_hours = []
+        for volunteer in rank_labels:
+            hours = queryset.filter(
+                user__username=volunteer,
+                department__name=dept_name
+            ).aggregate(total=Sum("hours"))["total"] or 0
+            dept_hours.append(float(hours))
+        volunteer_dept_data.append({
+            "label": dept_name,
+            "data": dept_hours
+        })
     
     dept_totals = (
         queryset
@@ -314,27 +333,16 @@ def reports(request):
         .annotate(hours=Sum("hours"))
         .order_by("-hours")
     )
-    
-    dept_averages = (
-        queryset
-        .values("department__name")
-        .annotate(avg=Avg("hours"))
-        .order_by("-avg")
-    )
 
-    rank_labels = [t["user__username"] for t in top_volunteers]
     rank_data = [float(t["hours"]) for t in top_volunteers]
 
     return render(request, "hub/reports.html", {
         "rank_labels_json": json.dumps(rank_labels),
-        "rank_data_json": json.dumps(rank_data),
+        "rank_datasets_json": json.dumps(volunteer_dept_data),
         "dept_labels_json": json.dumps([d["department__name"] for d in dept_totals]),
         "dept_data_json": json.dumps([float(d["hours"]) for d in dept_totals]),
-        "avg_labels_json": json.dumps([a["department__name"] for a in dept_averages]),
-        "avg_data_json": json.dumps([float(a["avg"]) for a in dept_averages]),
-        "has_rank_data": bool(rank_labels),
+        "has_rank_data": bool(rank_labels) and bool(volunteer_dept_data),
         "has_dept_data": dept_totals.exists(),
-        "has_avg_data": dept_averages.exists(),
         "total_hours": sum(rank_data),
         "pending_total": Contribution.objects.filter(status="PENDING").count(),
         "total_contributions": Contribution.objects.count(),

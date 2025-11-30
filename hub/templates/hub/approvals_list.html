@@ -46,7 +46,7 @@
               {% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
             </div>
             <div class="mb-2">
-              <span class="badge bg-secondary">{{ c.department.name }}</span>
+              <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ c.department.name }}</span>
               {% if c.event %}<span class="badge bg-info">{{ c.event.title|truncatewords:3 }}</span>{% endif %}
             </div>
             <p class="mb-1"><strong>{{ c.hours }}h</strong> on {{ c.date|date:"M d, Y" }}</p>

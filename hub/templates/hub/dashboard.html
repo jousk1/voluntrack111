@@ -1,5 +1,20 @@
 {% extends "hub/base.html" %}
 {% block content %}
+<style>
+  .dept-badge { font-weight: 500; text-align: center; }
+  .dept-color-0 { background-color: rgba(13,110,253,0.15) !important; color: #0d6efd !important; border-color: rgba(13,110,253,0.3) !important; }
+  .dept-color-1 { background-color: rgba(102,16,242,0.15) !important; color: #6610f2 !important; border-color: rgba(102,16,242,0.3) !important; }
+  .dept-color-2 { background-color: rgba(111,66,193,0.15) !important; color: #6f42c1 !important; border-color: rgba(111,66,193,0.3) !important; }
+  .dept-color-3 { background-color: rgba(214,51,132,0.15) !important; color: #d63384 !important; border-color: rgba(214,51,132,0.3) !important; }
+  .dept-color-4 { background-color: rgba(253,126,20,0.15) !important; color: #fd7e14 !important; border-color: rgba(253,126,20,0.3) !important; }
+  .dept-color-5 { background-color: rgba(220,53,69,0.15) !important; color: #dc3545 !important; border-color: rgba(220,53,69,0.3) !important; }
+  .dept-color-6 { background-color: rgba(32,201,151,0.15) !important; color: #20c997 !important; border-color: rgba(32,201,151,0.3) !important; }
+  .dept-color-7 { background-color: rgba(25,135,84,0.15) !important; color: #198754 !important; border-color: rgba(25,135,84,0.3) !important; }
+  .dept-color-8 { background-color: rgba(13,202,240,0.15) !important; color: #0dcaf0 !important; border-color: rgba(13,202,240,0.3) !important; }
+  .dept-color-9 { background-color: rgba(255,193,7,0.15) !important; color: #cc9a06 !important; border-color: rgba(255,193,7,0.3) !important; }
+  .dept-color-10 { background-color: rgba(108,117,125,0.15) !important; color: #6c757d !important; border-color: rgba(108,117,125,0.3) !important; }
+  .dept-color-11 { background-color: rgba(23,162,184,0.15) !important; color: #17a2b8 !important; border-color: rgba(23,162,184,0.3) !important; }
+</style>
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2>Dashboard</h2>
   <a href="{% url 'hub:contribution_create' %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Log Work</a>
@@ -53,7 +68,7 @@
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2 mb-2">
-                      <span class="badge bg-secondary">{{ c.department.name }}</span>
+                      <span class="badge border dept-badge" data-dept-id="{{ c.department.pk }}">{{ c.department.name }}</span>
                     </div>
                     <div class="d-flex align-items-center gap-3 text-muted small">
                       <span><i class="bi bi-calendar3"></i> {{ c.date|date:"M d, Y" }}</span>
@@ -80,17 +95,17 @@
         {% if signed_events %}
           <div class="list-group list-group-flush">
             {% for e in signed_events %}
-              <div class="list-group-item d-flex justify-content-between">
+              <div class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                   <h6 class="mb-1"><a href="{% url 'hub:event_detail' e.pk %}">{{ e.title }}</a></h6>
                   <p class="mb-0 text-muted"><i class="bi bi-calendar"></i> {{ e.date|date:"M d, Y H:i" }}</p>
                   <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ e.location }}</small>
                 </div>
-                {% if e.department %}<span class="badge bg-secondary">{{ e.department.name }}</span>{% endif %}
+                {% if e.department %}<span class="badge border dept-badge" data-dept-id="{{ e.department.pk }}">{{ e.department.name }}</span>{% endif %}
               </div>
             {% endfor %}
           </div>
-        {% else %}<p class="text-muted mb-0">You're not signed up for any events yet.</p>{% endif %}
+    {% else %}<p class="text-muted mb-0">You're not signed up for any events yet.</p>{% endif %}
       </div>
     </div>
   </div>
@@ -102,17 +117,26 @@
     {% if available_events %}
       <div class="list-group list-group-flush">
         {% for e in available_events %}
-          <div class="list-group-item d-flex justify-content-between">
+          <div class="list-group-item d-flex justify-content-between align-items-center">
             <div>
               <h6 class="mb-1"><a href="{% url 'hub:event_detail' e.pk %}">{{ e.title }}</a></h6>
               <p class="mb-0 text-muted"><i class="bi bi-calendar"></i> {{ e.date|date:"M d, Y H:i" }}</p>
               <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ e.location }}</small>
             </div>
-            {% if e.department %}<span class="badge bg-secondary">{{ e.department.name }}</span>{% endif %}
+            {% if e.department %}<span class="badge border dept-badge" data-dept-id="{{ e.department.pk }}">{{ e.department.name }}</span>{% endif %}
           </div>
         {% endfor %}
       </div>
     {% else %}<p class="text-muted mb-0">No other available events to sign up for.</p>{% endif %}
   </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".dept-badge[data-dept-id]").forEach(function(badge) {
+    const deptId = parseInt(badge.dataset.deptId, 10);
+    const colorIndex = deptId % 12;
+    badge.classList.add("dept-color-" + colorIndex);
+  });
+});
+</script>
 {% endblock %}

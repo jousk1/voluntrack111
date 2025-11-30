@@ -17,7 +17,7 @@
             </div>
             <p class="text-muted mb-2"><i class="bi bi-calendar"></i> {{ s.event.date|date:"F d, Y" }} at {{ s.event.date|date:"g:i A" }}</p>
             <p class="text-muted mb-2"><i class="bi bi-geo-alt"></i> {{ s.event.location }}</p>
-            {% if s.event.department %}<p class="mb-2"><span class="badge bg-secondary">{{ s.event.department.name }}</span></p>{% endif %}
+            {% if s.event.department %}<p class="mb-2"><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ s.event.department.name }}</span></p>{% endif %}
             {% if s.event.description %}<p class="card-text small text-muted">{{ s.event.description|truncatewords:15 }}</p>{% endif %}
             <div class="d-flex gap-2 mt-3">
               <a href="{% url 'hub:event_detail' s.event.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>

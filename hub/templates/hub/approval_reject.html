@@ -14,7 +14,7 @@
         <div class="mb-4">
           <h6 class="text-muted mb-1">Contribution Details</h6>
           <p class="mb-1"><strong>{{ contrib.hours }}h</strong> on {{ contrib.date|date:"F d, Y" }}</p>
-          <p class="mb-0"><span class="badge bg-secondary">{{ contrib.department.name }}</span></p>
+          <p class="mb-0"><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ contrib.department.name }}</span></p>
         </div>
         <form method="post">
           {% csrf_token %}

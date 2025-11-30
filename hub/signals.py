@@ -12,3 +12,6 @@ def create_user_profile(sender, instance, created, **kwargs):
     # Automatically create a Profile when a new User is created
     if created:
         Profile.objects.create(user=instance)
+
+
+

@@ -13,3 +13,5 @@ def coordinator_required(view_func):
         raise PermissionDenied
     
     return wrapper
+
+
